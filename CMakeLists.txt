@@ -5,4 +5,10 @@ set(CMAKE_C_STANDARD 11)
 
 add_executable(clox main.c
         memory.h
-        memory.c)
+        memory.c
+        common.h
+        chunk.h
+        chunk.c
+        debug.h
+        debug.c
+)
