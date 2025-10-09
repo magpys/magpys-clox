@@ -93,6 +93,14 @@ static void skipWhitespace() {
     }
 }
 
+static TokenType checkKeyword(int start, int length, const char* rest, TokenType type) {
+    if (scanner.current - scanner.start == start + length && memcmp(scanner.start + start, rest, length) == 0) {
+        return type;
+    }
+
+    return TOKEN_IDENTIFIER;
+}
+
 // note: when looking up keywords, they only begin with certain characters so we can save a lot of time by looking them up
 // one character at a time.
 // example: If we look up 'quail', there is no Lox keyword beginning with 'q' so we can immediately skip the whole lookup.
@@ -104,12 +112,29 @@ static TokenType identifierType() {
         case 'a': return checkKeyword(1, 2, "nd", TOKEN_AND);
         case 'c': return checkKeyword(1, 4, "lass", TOKEN_CLASS);
         case 'e': return checkKeyword(1, 3, "lse", TOKEN_ELSE);
+        case 'f':
+            if (scanner.current - scanner.start > 1) {
+                switch (scanner.start[1]) {
+                    case 'a': return checkKeyword(1, 3, "lse", TOKEN_FALSE);
+                    case 'o': return checkKeyword(1, 1, "r", TOKEN_FOR);
+                    case 'u': return checkKeyword(1, 1, "n", TOKEN_FUN);
+                }
+            }
+            break;
         case 'i': return checkKeyword(1, 1, "f", TOKEN_IF);
         case 'n': return checkKeyword(1, 2, "il", TOKEN_NIL);
         case 'o': return checkKeyword(1, 1, "r", TOKEN_OR);
         case 'p': return checkKeyword(1, 4, "rint", TOKEN_PRINT);
         case 'r': return checkKeyword(1, 5, "eturn", TOKEN_RETURN);
         case 's': return checkKeyword(1, 4, "uper", TOKEN_SUPER);
+        case 't':
+            if (scanner.current - scanner.start > 1) {
+                switch (scanner.start[1]) {
+                    case 'h': return checkKeyword(1, 2, "is", TOKEN_THIS);
+                    case 'r': return checkKeyword(1, 2, "ue", TOKEN_TRUE);
+                }
+            }
+            break;
         case 'v': return checkKeyword(1, 2, "ar", TOKEN_VAR);
         case 'w': return checkKeyword(1, 4, "hile", TOKEN_WHILE);
     }
