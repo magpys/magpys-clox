@@ -53,6 +53,10 @@ static Value peek(int distance) {
     return vm.stackTop[-1 - distance];
 }
 
+static bool isFalsey(Value value) {
+    return IS_NIL(value) || (IS_BOOL(value) && !AS_BOOL(value));
+}
+
 static InterpretResult run() {
 #define READ_BYTE() (*vm.ip++)
 #define READ_CONSTANT() (vm.chunk->constants.values[READ_BYTE()])
@@ -60,11 +64,15 @@ static InterpretResult run() {
     // otherwise be safely contained in a macro function.
     // Also, the author notes how wild it feels to pass an operator into a function,
     // perks of the C pre-processor treating everything as tokens!
-#define BINARY_OP(op) \
+#define BINARY_OP(valueType, op) \
     do { \
-        double b = pop(); \
-        double a = pop(); \
-        push(a op b); \
+        if (!IS_NUMBER(peek(0)) || !IS_NUMBER(peek(1))) { \
+            runtimeError("Operands must be numbers."); \
+            return INTERPRET_RUNTIME_ERROR; \
+        } \
+        double b = AS_NUMBER(pop()); \
+        double a = AS_NUMBER(pop()); \
+        push(valueType(a op b)); \
     } while (false)
 
     for (;;) {
@@ -87,10 +95,16 @@ static InterpretResult run() {
                 printf("\n");
                 break;
             }
-            case OP_ADD: BINARY_OP(+); break;
-            case OP_SUBTRACT: BINARY_OP(-); break;
-            case OP_MULTIPLY: BINARY_OP(*); break;
-            case OP_DIVIDE: BINARY_OP(/); break;
+            case OP_NIL: push(NIL_VAL); break;
+            case OP_TRUE: push(BOOL_VAL(true)); break;
+            case OP_FALSE: push(BOOL_VAL(false)); break;
+            case OP_ADD: BINARY_OP(NUMBER_VAL, +); break;
+            case OP_SUBTRACT: BINARY_OP(NUMBER_VAL, -); break;
+            case OP_MULTIPLY: BINARY_OP(NUMBER_VAL, *); break;
+            case OP_DIVIDE: BINARY_OP(NUMBER_VAL, /); break;
+            case OP_NOT:
+                push(BOOL_VAL(isFalsey(pop())));
+                break;
             case OP_NEGATE:
                 if (!IS_NUMBER(peek(0))) {
                     runtimeError("Operand must be a number.");
