@@ -9,6 +9,7 @@ typedef enum {
     OP_NIL,
     OP_TRUE,
     OP_FALSE,
+    OP_POP,
     // note: We could (and perhaps should because it would be marginally faster) use specific OpCode instructions for
     // OP_GREATER_EQUAL, OP_LESS_EQUAL and OP_NOT_EQUAL - but we can build these out of a mixture of the others.
     // For example a <= b is equivalent to !(a > b), therefore we can build OP_LESS_EQUAL out of OP_GREATER followed by OP_NOT.
@@ -22,6 +23,7 @@ typedef enum {
     OP_DIVIDE,
     OP_NOT,
     OP_NEGATE,
+    OP_PRINT,
     OP_RETURN
 } OpCode;
 
