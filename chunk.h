@@ -10,7 +10,9 @@ typedef enum {
     OP_TRUE,
     OP_FALSE,
     OP_POP,
+    OP_GET_GLOBAL,
     OP_DEFINE_GLOBAL,
+    OP_SET_GLOBAL,
     // note: We could (and perhaps should because it would be marginally faster) use specific OpCode instructions for
     // OP_GREATER_EQUAL, OP_LESS_EQUAL and OP_NOT_EQUAL - but we can build these out of a mixture of the others.
     // For example a <= b is equivalent to !(a > b), therefore we can build OP_LESS_EQUAL out of OP_GREATER followed by OP_NOT.
