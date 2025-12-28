@@ -371,7 +371,6 @@ bool compile(const char* source, Chunk* chunk) {
     parser.panicMode = false;
 
     advance();
-    expression();
 
     while (!match(TOKEN_EOF)) {
         declaration();
